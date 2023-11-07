@@ -1,12 +1,15 @@
-import React from 'react';
-import Header from '../../components/Header/Header';
+import React from "react";
+import Title from "../../components/Title/Title";
 
 const LoginPage = () => {
-    return (
-        <div>
-            <h1>Página Login</h1>
-        </div>
-    );
+  return (
+    <div>
+      <Title 
+        titleText={"Página de Login"}
+        additionalClass={'margem-acima'}
+      />
+    </div>
+  );
 };
 
 export default LoginPage;
