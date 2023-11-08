@@ -1,4 +1,5 @@
 import React from 'react';
+import './VisionSection.css';
 import Title from '../Title/Title';
 
 const VisionSection = () => {
