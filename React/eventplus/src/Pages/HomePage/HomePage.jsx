@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./HomePage.css";
 import MainContent from "../../components/MainContent/MainContent";
 import Banner from "../../components/Banner/Banner";
@@ -9,6 +9,23 @@ import Container from "../../components/Container/Container";
 import Title from "../../components/Title/Title";
 
 const HomePage = () => {
+
+  //fake mock - api mocada
+  const [nextEvents, setNextEvents] = useState([
+    {
+      id: 1,
+      title: "Evento X",
+      descricao: "Evento de SQL Server",
+      data: "10/11/2023",
+    },
+    {
+      id: 2,
+      title: "Evento Y",
+      descricao: "Bora Codar JS",
+      data: "11/11/2023",
+    },
+  ]);
+
   return (
     <MainContent>
       <Banner />
@@ -16,16 +33,20 @@ const HomePage = () => {
       {/* PRÓXIMOS EVENTOS */}
       <section className="proximos-eventos">
         <Container>
-          <Title titleText={"Próximos Eventos"}/>
+          <Title titleText={"Próximos Eventos"} />
 
           <div className="events-box">
-            <NextEvent
-              title={"Happy Hour Event"}
-              drescription={"Evento Legal"}
-              eventDate={"14/11/2023"}
-              idEvento={"d41b6eb0-e29d-494f-8b38-ac9c3ee48861"}
-            />
-            
+            {nextEvents.map((e) => {
+              return (
+                <NextEvent
+                  title={e.title}
+                  drescription={e.descricao}
+                  eventDate={e.data}
+                  idEvento={e.id}
+                />
+              );
+            })}
+
           </div>
         </Container>
       </section>
