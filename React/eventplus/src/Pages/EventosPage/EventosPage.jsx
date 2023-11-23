@@ -7,7 +7,11 @@ import eventImage from "../../assets/images/evento.svg";
 import Container from "../../components/Container/Container";
 import TableEv from "./TableEv/TableEv";
 
-import { Button, Input } from "../../components/FormComponents/FormComponents";
+import {
+  Button,
+  Input,
+  Select,
+} from "../../components/FormComponents/FormComponents";
 
 import api from "../../Services/Service";
 
@@ -26,6 +30,7 @@ const EventosPage = () => {
   const [descricao, setDescricao] = useState("");
   const [tipoEvento, setTipoEvento] = useState("");
   const [data, setData] = useState("");
+  const [instituicao, setInstituicao] = useState("923fb695-5e20-4bbd-a7d5-01bf54d2096b");
 
   const [titulo, setTitulo] = useState("");
   const [idEvento, setIdEvento] = useState(null); //usar apenas para a edição
@@ -62,19 +67,19 @@ const EventosPage = () => {
     // parar o submit do formulário
     e.preventDefault();
     // validar pelo menos 3 caracteres
-    // if (titulo.trim().length < 3) {
-    //   alert("O Título deve ter no mínimo 3 caracteres");
-    //   return;
-    // }
+    if (nome.trim().length < 3) {
+      alert("O Título deve ter no mínimo 3 caracteres");
+      return;
+    }
     // chamar a api
     try {
       const retorno = await api.post("/Evento", {
-         titulo: titulo, 
-         nomeEvento: nome,
-         descricao: descricao,
-         dataEvento: data,
-        
-        });
+        nomeEvento: nome,
+        descricao: descricao,
+        idTipoEvento: tipoEvento,
+        dataEvento: data,
+        idInstituicao: instituicao,
+      });
 
       setNotifyUser({
         titleNote: "Sucesso",
@@ -94,7 +99,6 @@ const EventosPage = () => {
       setDescricao(""); //limpa a variável
       setTipoEvento(""); //limpa a variável
       setData(""); //limpa a variável
-
     } catch (error) {
       console.log("Deu ruim na api: ");
       console.log(error);
@@ -111,14 +115,12 @@ const EventosPage = () => {
       const retorno = await api.get(`/Evento/${idElemento}`);
 
       // preencher o título e o id no state
-    
-      
+
       setTitulo(retorno.data.titulo);
       setNome(retorno.data.nomeEvento);
       setDescricao(retorno.data.descricao);
       setIdEvento(retorno.data.idTipoEvento);
       setData(retorno.data.dataEvento);
-
     } catch (error) {
       alert("Não foi possível mostrar a tela de edição, tente novamente!");
     }
@@ -130,10 +132,11 @@ const EventosPage = () => {
 
       // salvar os dados
       const retorno = await api.put(`/Evento/${idEvento}`, {
-         titulo: titulo,
-         nomeEvento: nome,
-         descricao: descricao,
-         dataEvento: data,
+        idInstituicao: instituicao,
+        nomeEvento: nome,
+        descricao: descricao,
+        dataEvento: data,
+        idTipoEvento: tipoEvento,
       });
 
       setNotifyUser({
@@ -159,11 +162,11 @@ const EventosPage = () => {
   function editActionAbort() {
     setFrmEdit(false);
     setTitulo("");
+    setIdEvento(null);
     setNome("");
     setDescricao("");
     setTipoEvento("");
     setData("");
-    setIdEvento(null);
   }
 
   async function handleDelete(id) {
@@ -191,10 +194,7 @@ const EventosPage = () => {
         <Container>
           <div className="cadastro-evento__box">
             <Title titleText={"Página Eventos"} />
-            <ImageIllustrator
-              alterText={"?????"}
-              imageRender={eventImage}
-            />
+            <ImageIllustrator alterText={"?????"} imageRender={eventImage} />
 
             <form
               className="ftipo-evento"
@@ -227,7 +227,7 @@ const EventosPage = () => {
                     }}
                   />
 
-                  <Input
+                  <Select
                     type={"text"}
                     id={"tipoEvento"}
                     name={"tipoEvento"}
@@ -286,7 +286,7 @@ const EventosPage = () => {
                     }}
                   />
 
-                  <Input
+                  <Select
                     type={"text"}
                     id={"tipoEvento"}
                     name={"tipoEvento"}

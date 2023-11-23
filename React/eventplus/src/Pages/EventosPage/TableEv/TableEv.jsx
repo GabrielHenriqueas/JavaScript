@@ -4,7 +4,7 @@ import "./TableEv.css";
 import editPen from "../../../assets/images/edit-pen.svg";
 import trashDelete from "../../../assets/images/trash-delete.svg";
 
-import { dateFormatDbToView } from "../../../Utils/stringFunctions"
+import { Tooltip } from 'react-tooltip'
 
 const TableEv = ({ dados, fnUpdate, fnDelete }) => {
   return (
@@ -43,13 +43,14 @@ const TableEv = ({ dados, fnUpdate, fnDelete }) => {
                 {tp.nomeEvento}
               </td>
               <td className="table-data__data table-data__data--big">
-                {tp.descricao}
+                {tp.descricao.substr(0, 25)} . . .
               </td>
               <td className="table-data__data table-data__data--big">
                 {tp.tiposEvento.titulo}
               </td>
               <td className="table-data__data table-data__data--big">
-                {dateFormatDbToView(tp.dataEvento)}
+              <Tooltip className='tooltip' id={tp} />
+                {new Date(tp.dataEvento).toLocaleDateString()}
               </td>
 
               <td className="table-data__data table-data__data--little">

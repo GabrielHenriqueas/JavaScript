@@ -44,6 +44,7 @@ const TipoEventos = () => {
     }
     getTipoEventos();
     console.log("A TIPO EVENTOS FOI MONTADA!");
+    
   }, []);
 
   async function handleSubmit(e) {
