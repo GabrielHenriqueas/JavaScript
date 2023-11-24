@@ -42,14 +42,20 @@ const TableEv = ({ dados, fnUpdate, fnDelete }) => {
               <td className="table-data__data table-data__data--big">
                 {tp.nomeEvento}
               </td>
-              <td className="table-data__data table-data__data--big">
+              <td className="table-data__data table-data__data--big"
+
+                  data-tooltip-id={tp.idEvento}
+                  data-tooltip-content={tp.descricao}
+                  data-tooltip-place="top"
+              
+              >
+                <Tooltip className='tooltip' id={tp.idEvento} />
                 {tp.descricao.substr(0, 25)} . . .
               </td>
               <td className="table-data__data table-data__data--big">
                 {tp.tiposEvento.titulo}
               </td>
-              <td className="table-data__data table-data__data--big">
-              <Tooltip className='tooltip' id={tp} />
+              <td className="table-data__data table-data__data--big">                
                 {new Date(tp.dataEvento).toLocaleDateString()}
               </td>
 

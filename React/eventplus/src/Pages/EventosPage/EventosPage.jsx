@@ -32,6 +32,8 @@ const EventosPage = () => {
   const [data, setData] = useState("");
   const [instituicao, setInstituicao] = useState("923fb695-5e20-4bbd-a7d5-01bf54d2096b");
 
+  const [select, setSelect] = useState("")
+
   const [titulo, setTitulo] = useState("");
   const [idEvento, setIdEvento] = useState(null); //usar apenas para a edição
 
@@ -51,9 +53,11 @@ const EventosPage = () => {
     async function getEventos() {
       try {
         const promise = await api.get("/Evento");
+        const promiseTipoEventos = await api.get("/TiposEvento");
 
         console.log(promise.data);
         setEventos(promise.data);
+        setTipoEventos(promiseTipoEventos.data);
       } catch (error) {
         alert("Deu ruim na API!");
       }
@@ -71,6 +75,7 @@ const EventosPage = () => {
       alert("O Título deve ter no mínimo 3 caracteres");
       return;
     }
+
     // chamar a api
     try {
       const retorno = await api.post("/Evento", {
@@ -97,7 +102,8 @@ const EventosPage = () => {
       setTitulo(""); //limpa a variável
       setNome(""); //limpa a variável
       setDescricao(""); //limpa a variável
-      setTipoEvento(""); //limpa a variável
+      // setTipoEvento(""); //limpa a variável
+      setTipoEvento("")
       setData(""); //limpa a variável
     } catch (error) {
       console.log("Deu ruim na api: ");
@@ -105,22 +111,26 @@ const EventosPage = () => {
     }
     setShowSpinner(false);
   }
-  /****************** EDITAR CADASTRO ******************/
+
+  // ********************* EDITAR **********************************
 
   async function showUpdateForm(idElemento) {
     setFrmEdit(true);
 
     try {
+
       // fazer um getById para pegar os dados
       const retorno = await api.get(`/Evento/${idElemento}`);
 
       // preencher o título e o id no state
-
       setTitulo(retorno.data.titulo);
       setNome(retorno.data.nomeEvento);
       setDescricao(retorno.data.descricao);
       setIdEvento(retorno.data.idTipoEvento);
       setData(retorno.data.dataEvento);
+      setInstituicao(retorno.data.idInstituicao);
+      setSelect(retorno.data.titulo)
+
     } catch (error) {
       alert("Não foi possível mostrar a tela de edição, tente novamente!");
     }
@@ -132,20 +142,24 @@ const EventosPage = () => {
 
       // salvar os dados
       const retorno = await api.put(`/Evento/${idEvento}`, {
-        idInstituicao: instituicao,
+
         nomeEvento: nome,
         descricao: descricao,
-        dataEvento: data,
         idTipoEvento: tipoEvento,
+        dataEvento: data,
+        idInstituicao: instituicao,
+
       });
 
       setNotifyUser({
+
         titleNote: "Sucesso",
         textNote: `Atualizado com sucesso!`,
         imgIcon: "success",
         imgAlt:
           "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
         showMessage: true,
+
       });
 
       // atualizar o state (apiGet)
@@ -153,21 +167,35 @@ const EventosPage = () => {
       setEventos(retornoGet.data); // atualiza o state da tabela
       // limpar o state do título e do idEvento
       editActionAbort();
+
     } catch (error) {
-      alert("Problemas na atualização. Verifique a conexão com a internet!");
+
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro ao Atualizar`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
+
     }
   }
 
   // reseta o state e cancela a tela de edição
   function editActionAbort() {
+
     setFrmEdit(false);
     setTitulo("");
     setIdEvento(null);
     setNome("");
     setDescricao("");
-    setTipoEvento("");
+    setTipoEvento([]);
     setData("");
+
   }
+
+  // ****************** DELETAR ******************
 
   async function handleDelete(id) {
     try {
@@ -181,6 +209,8 @@ const EventosPage = () => {
     }
   }
 
+
+   // ***************** RETURN COMPONENTES ***************************
   return (
     <MainContent>
       <Notification {...notifyUser} setNotifyUser={setNotifyUser} />
@@ -228,12 +258,13 @@ const EventosPage = () => {
                   />
 
                   <Select
+                    dados={tipoEventos}
                     type={"text"}
                     id={"tipoEvento"}
                     name={"tipoEvento"}
+                    value={tipoEvento}
                     placeholder={"Tipo Evento"}
                     required={"required"}
-                    value={tipoEvento}
                     manipulationFunction={(e) => {
                       setTipoEvento(e.target.value);
                     }}
@@ -286,15 +317,15 @@ const EventosPage = () => {
                     }}
                   />
 
-                  <Select
+                  <Select 
+                    dados={tipoEventos}
                     type={"text"}
                     id={"tipoEvento"}
                     name={"tipoEvento"}
                     placeholder={"Tipo Evento"}
                     required={"required"}
-                    value={tipoEvento}
                     manipulationFunction={(e) => {
-                      setTipoEvento(e.target.value);
+                      setSelect(e.target.value);
                     }}
                   />
 

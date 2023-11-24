@@ -48,18 +48,13 @@ export const Button = ({
 };
 
 export const Select = ({ 
-    dados = [
-        { value: "b5c2359e-782b-48b5-b1db-04acc0464107", text: "C#" },
-        { value: "ce5882cf-5d04-45f3-a4e6-216297781b1e", text: "HTML" },
-        { value: "55f3ad5d-6d42-47e4-b249-290d05743ff3", text: "CSS" },
-        { value: "a1fdc28b-496f-4d99-808c-c7095649bf56", text: "Java Script" },
-    ],
+    dados = [],
     id,
     name,
     require,
     additionalClass = "",
     manipulationFunction,
-    defaultValue,
+    value,
 
 }) => {
   return (
@@ -69,14 +64,14 @@ export const Select = ({
         required={require}
         className={`input-component ${additionalClass}`}
         onChange={manipulationFunction}
-        value={defaultValue}
+        value={value}
     >
 
       <option value="">Selecione</option>
       {dados.map((e) => {
         return (
-          <option key={e.value} value={e.value}>
-            {e.text}
+          <option key={e.idTipoEvento} value={e.idTipoEvento}>
+            {e.titulo}
           </option>
         );
       })}

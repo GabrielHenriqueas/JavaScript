@@ -123,7 +123,14 @@ const TipoEventos = () => {
       editActionAbort();
 
     } catch (error) {
-      alert("Problemas na atualização. Verifique a conexão com a internet!");
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro ao Atualizar`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
     }
   }
 
