@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./HomePage.css";
 import MainContent from "../../components/MainContent/MainContent";
 import Banner from "../../components/Banner/Banner";
@@ -9,8 +9,14 @@ import Container from "../../components/Container/Container";
 import Title from "../../components/Title/Title";
 import axios from "axios";
 import api from "../../Services/Service"
+import { UserContext } from "../../assets/context/AuthContext";
 
 const HomePage = () => {
+
+  const {userData} = useContext(UserContext);
+
+  console.log("DADOS GLOBAIS DO USUÁRIO");
+  console.log(userData);
 
   useEffect(() => {
     //chamar a API

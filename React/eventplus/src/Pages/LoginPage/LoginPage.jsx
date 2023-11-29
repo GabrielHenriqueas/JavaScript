@@ -7,9 +7,51 @@ import "./LoginPage.css";
 
 import loginImage from "../../assets/images/login.svg"
 
+import api from "../../Services/Service"
+import { useContext, UserContext, userDecodeToken } from "../../assets/context/AuthContext";
+
 const LoginPage = () => {
   
-  const [user, setUser] = useState({email: "gabriel@admin.com", senha: ""});
+  const [user, setUser] = useState({email: "gabriel@admin.com", senha: "123"});
+  //fa
+  const [userData, setUserData] = useContext(UserContext);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    if ( user.email.length >= 3 && user.senha.length > 3) {
+      
+      //chamar a API
+      try {
+        
+        const promise = await api.post("/Login", {
+          
+          email: user.email,
+          senha: user.senha
+
+        });
+
+        console.log(promise.data.token);
+
+        const userFullToken = userDecodeToken(promise.data.token);
+
+        setUserData(userFullToken);// guarda os dados decodificados (payload)
+
+        console.log("DADOS DO USUÁRIO");
+        console.log(userData);
+
+      } catch (error) {// 401 bad request
+        alert("Usuários inválidos ou conexão com a internet interrompida");
+      }
+      
+      alert("Postando os dados na API");
+
+    } else {
+
+      alert("Preencha os campos corretamnete");
+
+    }
+  }
 
   return (
     <div className="layout-grid-login">
@@ -26,7 +68,7 @@ const LoginPage = () => {
         <div className="frm-login">
           <img src={logo} className="frm-login__logo" alt="" />
 
-          <form className="frm-login__formbox">
+          <form className="frm-login__formbox" onSubmit={handleSubmit}>
             <Input
               additionalClass="frm-login__entry"
               type="email"
@@ -34,8 +76,14 @@ const LoginPage = () => {
               name="login"
               required={true}
               value={user.email}
-              manipulationFunction={(e) => {}}
-              placeholder="Username"
+              manipulationFunction={(e) => {
+                setUser({
+                  ...user,
+                  email: e.target.value.trim()
+                })
+              }}
+              placeholder="UserName"
+            
             />
             <Input
               additionalClass="frm-login__entry"
@@ -44,8 +92,14 @@ const LoginPage = () => {
               name="senha"
               required={true}
               value={user.senha}
-              manipulationFunction={(e) => {}}
-              placeholder="****"
+              manipulationFunction={(e) => {
+                setUser({
+                  ...user,
+                  senha: e.target.value.trim()
+                })
+              }}
+              placeholder="Senha"
+
             />
 
             <a href="" className="frm-login__link">
@@ -53,7 +107,7 @@ const LoginPage = () => {
             </a>
 
             <Button
-              buttonText="Login"
+              textButton="Login"
               id="btn-login"
               name="btn-login"
               type="submit"
