@@ -1,55 +1,58 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ImageIllustrator from "../../components/ImageIllustrator/ImageIllustrator";
 import logo from "../../assets/images/logo-pink.svg";
 import { Input, Button } from "../../components/FormComponents/FormComponents";
 
 import "./LoginPage.css";
 
-import loginImage from "../../assets/images/login.svg"
+import loginImage from "../../assets/images/login.svg";
 
-import api from "../../Services/Service"
-import { useContext, UserContext, userDecodeToken } from "../../assets/context/AuthContext";
+import api from "../../Services/Service";
+import { UserContext, userDecodeToken } from "../../assets/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  
-  const [user, setUser] = useState({email: "gabriel@admin.com", senha: "123"});
+  const [user, setUser] = useState({
+    email: "gabriel@email.com",
+    senha: "Senai@134",
+  });
   //fa
-  const [userData, setUserData] = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userData.name) navigate("/");
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    
-    if ( user.email.length >= 3 && user.senha.length > 3) {
-      
+
+    if (user.email.length >= 3 && user.senha.length > 3) {
       //chamar a API
       try {
-        
         const promise = await api.post("/Login", {
-          
           email: user.email,
-          senha: user.senha
-
+          senha: user.senha,
         });
 
         console.log(promise.data.token);
 
         const userFullToken = userDecodeToken(promise.data.token);
 
-        setUserData(userFullToken);// guarda os dados decodificados (payload)
+        setUserData(userFullToken); // guarda os dados decodificados (payload)
+        localStorage.setItem("token", JSON.stringify(userFullToken));
+        navigate("/"); // manda o usuário para a home
 
         console.log("DADOS DO USUÁRIO");
         console.log(userData);
-
-      } catch (error) {// 401 bad request
+      } catch (error) {
+        // 401 bad request
         alert("Usuários inválidos ou conexão com a internet interrompida");
       }
-      
+
       alert("Postando os dados na API");
-
     } else {
-
       alert("Preencha os campos corretamnete");
-
     }
   }
 
@@ -79,11 +82,10 @@ const LoginPage = () => {
               manipulationFunction={(e) => {
                 setUser({
                   ...user,
-                  email: e.target.value.trim()
-                })
+                  email: e.target.value.trim(),
+                });
               }}
               placeholder="UserName"
-            
             />
             <Input
               additionalClass="frm-login__entry"
@@ -95,11 +97,10 @@ const LoginPage = () => {
               manipulationFunction={(e) => {
                 setUser({
                   ...user,
-                  senha: e.target.value.trim()
-                })
+                  senha: e.target.value.trim(),
+                });
               }}
               placeholder="Senha"
-
             />
 
             <a href="" className="frm-login__link">
@@ -112,7 +113,7 @@ const LoginPage = () => {
               name="btn-login"
               type="submit"
               additionalClass="frm-login__button"
-              onClick={()=>{}}
+              onClick={() => {}}
             />
           </form>
         </div>
