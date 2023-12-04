@@ -70,8 +70,8 @@ export const Select = ({
       <option value="">Selecione</option>
       {dados.map((e) => {
         return (
-          <option key={e.idTipoEvento} value={e.idTipoEvento}>
-            {e.titulo}
+          <option key={e.value} value={e.value}>
+            {e.text}
           </option>
         );
       })}
