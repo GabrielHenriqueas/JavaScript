@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Header from "../../components/Header/Header";
 import MainContent from "../../components/MainContent/MainContent";
 import Title from "../../components/Title/Title";
 import Table from "./TableEvA/TableEvA";
@@ -11,6 +10,7 @@ import api from "../../Services/Service";
 
 import "./EventosAlunoPage.css";
 import { UserContext } from "../../assets/context/AuthContext";
+import { clear } from "@testing-library/user-event/dist/clear";
 
 const EventosAlunoPage = () => {
   // state do menu mobile
@@ -36,8 +36,14 @@ const EventosAlunoPage = () => {
       try {
         if (tipoEvento === "1") {// todos os eventos
           const promise = await api.get("/Evento");
+          const promiseEventos = await api.get(`/PresencasEvento/ListarMinhas/${userData.userId}`);
+
+          const dadosMarcados = verificaPresenca(promise.data, promiseEventos.data);
+          console.clear();
+          console.log("DADOS MARCADOS");
+          console.log(dadosMarcados);
           setEventos(promise.data);
-          // console.log(promise.data);
+          console.log(promise.data);
 
         } else {// meus eventos
           let arrEventos = [];
@@ -57,7 +63,24 @@ const EventosAlunoPage = () => {
     }
 
     loadEventsType();
-  }, []);
+  }, [tipoEvento, userData.userId]);
+
+  const verificaPresenca = ( arrAllEvents, eventsUser ) => {
+
+    for (let x = 0; x < arrAllEvents.length; x++) {// para cada evento (todos)
+      // verifica se o aluno está participando do evento atual (x)
+      for (let i = 0; i < eventsUser.length; i++) {
+        if (arrAllEvents[x].idEvento === eventsUser[i].idEvento) {
+
+          arrAllEvents[x].situacao = true;
+          break;
+          
+        }        
+      }
+    }
+    // devolve o array modificado
+    return arrAllEvents;
+  }
 
   // toggle meus eventos ou todos os eventos
   function myEvents(tpEvent) {
