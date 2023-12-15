@@ -30,49 +30,56 @@ const EventosAlunoPage = () => {
   const { userData, setUserData } = useContext(UserContext);
 
   useEffect(() => {
-    
-    async function loadEventsType() {
-      setShowSpinner(true);
-      try {
-        if (tipoEvento === "1") {// todos os eventos
-          const promise = await api.get("/Evento");
-          const promiseEventos = await api.get(`/PresencasEvento/ListarMinhas/${userData.userId}`);
-
-          const dadosMarcados = verificaPresenca(promise.data, promiseEventos.data);
-          console.clear();
-          console.log("DADOS MARCADOS");
-          console.log(dadosMarcados);
-          setEventos(promise.data);
-          console.log(promise.data);
-
-        } else {// meus eventos
-          let arrEventos = [];
-          const promiseEventos = await api.get(`/PresencasEvento/ListarMinhas/${userData.userId}`);
-          promiseEventos.data.forEach((element) => {
-            arrEventos.push( element.evento )
-          });
-          setEventos(arrEventos);
-        }        
-        
-      } catch (error) {
-        console.log("Erro ao carregar os eventos");
-        console.log(error);
-      }
-      setShowSpinner(false);
-      
-    }
 
     loadEventsType();
   }, [tipoEvento, userData.userId]);
+
+  async function loadEventsType() {
+    setShowSpinner(true);
+    try {
+      if (tipoEvento === "1") {// todos os eventos
+        const promise = await api.get("/Evento");
+        const promiseEventos = await api.get(`/PresencasEvento/ListarMinhas/${userData.userId}`);
+
+        const dadosMarcados = verificaPresenca(promise.data, promiseEventos.data);
+        console.clear();
+        console.log("DADOS MARCADOS");
+        console.log(dadosMarcados);
+        setEventos(promise.data);
+        console.log(promise.data);
+
+      } else {// meus eventos
+        let arrEventos = [];
+        const promiseEventos = await api.get(`/PresencasEvento/ListarMinhas/${userData.userId}`);
+        promiseEventos.data.forEach((element) => {
+          arrEventos.push({
+            ...element.evento,
+            situacao: element.situacao,
+            isPresencaEvento: element.idPresencaEvento
+            
+           })
+        });
+        setEventos(arrEventos);
+      }        
+      
+    } catch (error) {
+      console.log("Erro ao carregar os eventos");
+      console.log(error);
+    }
+    setShowSpinner(false);
+    
+  }
+
 
   const verificaPresenca = ( arrAllEvents, eventsUser ) => {
 
     for (let x = 0; x < arrAllEvents.length; x++) {// para cada evento (todos)
       // verifica se o aluno está participando do evento atual (x)
       for (let i = 0; i < eventsUser.length; i++) {
-        if (arrAllEvents[x].idEvento === eventsUser[i].idEvento) {
+        if (arrAllEvents[x].idEvento === eventsUser[i].evento.idEvento) {
 
           arrAllEvents[x].situacao = true;
+          arrAllEvents[x].idPresencaEvento = eventsUser[i].idPresencaEvento;
           break;
           
         }        
@@ -95,12 +102,51 @@ const EventosAlunoPage = () => {
     setShowModal(showModal ? false : true);
   };
 
-  const commentaryRemove = () => {
+  const commentaryRemove = async () => {
     alert("Remover o comentário");
   };
 
-  function handleConnect() {
-    alert("Desenvolver a função conectar evento");
+   async function handleConnect(idEvent, connect = false, idPresencaEvento = null) {
+    // conecta o usuário e atualiza a tela
+    if (connect === true) {
+      try {
+        const promise = await api.post("/PresencasEvento", {
+          situacao: true,
+          idUsuario: userData.userId,
+          idEvento: idEvent,
+        });
+
+        if (promise.status === 201) {
+          loadEventsType();
+          alert("Presença confirmada, parabéns");
+        }
+        
+      } catch (error) {
+        console.log("Erro ao conectar");
+        console.log(error);
+      }
+      return;
+    } else {
+      try {
+            // unconnect
+      console.log("ID DAPRESENÇA DO EVENTO");
+      console.log(idPresencaEvento);
+  
+      const promiseDelete = api.delete("/PresencasEvento/" + idPresencaEvento);
+      if (promiseDelete.status ) {
+        
+      }
+  
+      alert("Desconectar do evento " + idEvent);
+      } catch (error) {
+        console.log("Erro ao desconectar");
+        console.log(error);
+      }
+
+    }
+
+
+    
   }
   return (
     <>
@@ -108,7 +154,7 @@ const EventosAlunoPage = () => {
 
       <MainContent>
         <Container>
-          <Title titleText={"Eventos"} className="custom-title" />
+          <Title titleText={"Eventos"} additionalClass="custom-title" />
 
           <Select
             id="id-tipo-evento"
@@ -136,6 +182,8 @@ const EventosAlunoPage = () => {
         <Modal
           userId={userData.userId}
           showHideModal={showHideModal}
+          fnGet={loadMyComentary}
+          fnPost={postMyComentary}
           fnDelete={commentaryRemove}
         />
       ) : null}
